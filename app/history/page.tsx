@@ -40,11 +40,23 @@ export default function HistoryPage() {
       setLoading(true)
       setError(null)
       
-      // Load coins history
-      const history = await userApi.getAllCoinsHistory()
+      // Get current user first
+      const currentUser = await userApi.getCurrentUser()
+      
+      // Load all pages of coins history
+      const allHistory: CoinsHistoryRecord[] = []
+      let page = 0
+      let hasMore = true
+      
+      while (hasMore) {
+        const response = await userApi.getAllCoinsHistory(currentUser.id, page, 100)
+        allHistory.push(...response.content)
+        hasMore = !response.last
+        page++
+      }
       
       // Convert to our format
-      const records: HistoryRecord[] = history.map((h, index) => ({
+      const records: HistoryRecord[] = allHistory.map((h, index) => ({
         id: index + 1,
         date: new Date(h.date).toLocaleDateString('ru-RU'),
         teacher: h.admin ? `${h.admin.last_name} ${h.admin.first_name}` : 'Система',

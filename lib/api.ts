@@ -159,12 +159,19 @@ export const userApi = {
     return handleResponse<CoinsHistoryRecord[]>(response);
   },
 
-  // Get all coins history (for teachers - coins they awarded)
-  getAllCoinsHistory: async (): Promise<CoinsHistoryRecord[]> => {
-    const response = await fetch(`${API_BASE_URL}/users/allCoinsHistory`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse<CoinsHistoryRecord[]>(response);
+  // Get all coins history (paginated) for a specific user
+  getAllCoinsHistory: async (
+    userId: number,
+    page = 0,
+    size = 5,
+    sortBy = 'enrollmentDate',
+    sortDir = 'desc'
+  ): Promise<PageableResponse<CoinsHistoryRecord>> => {
+    const response = await fetch(
+      `${API_BASE_URL}/users/${userId}/coinsHistory?page=${page}&size=${size}&sortBy=${encodeURIComponent(sortBy)}&sortDir=${encodeURIComponent(sortDir)}`,
+      { headers: getAuthHeaders() }
+    );
+    return handleResponse<PageableResponse<CoinsHistoryRecord>>(response);
   },
 
   // New listing endpoints
