@@ -64,11 +64,10 @@ export interface CreateGroupRequest {
 // Coins History Types
 export interface CoinsHistoryRecord {
   id: number;
-  user?: UserDTO & { group_name?: string };
-  admin?: UserDTO;
-  coins: number;
+  teacher_name: string;
+  student_name: string;
+  enrolled_coins: number;
   date: string;
-  reason?: string;
 }
 
 export interface AddCoinsRequest {
