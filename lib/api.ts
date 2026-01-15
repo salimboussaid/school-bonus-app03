@@ -19,10 +19,9 @@ import {
 // Direct connection to backend - CORS should now be enabled on the server
 // For HTTPS deployment (Netlify), use CORS proxy to avoid mixed content issues
 // For local development, use direct HTTP connection
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
-  (typeof window !== 'undefined' && window.location.protocol === 'https:' 
-    ? 'https://cors.bridged.cc/http://212.220.105.29:8079/api' 
-    : 'http://212.220.105.29:8079/api');
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'http://212.220.105.29:8079/api';
 
 export class ApiError extends Error {
   constructor(
