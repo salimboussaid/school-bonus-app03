@@ -1,0 +1,7 @@
+# API proxy - direct to backend
+# Note: Netlify proxies may not forward Authorization headers reliably on POST/PUT
+# If 403 errors persist, consider using a Netlify Edge Function
+/api/*  http://212.220.105.29:8079/api/:splat  200!
+
+# SPA fallback
+/*  /index.html  200

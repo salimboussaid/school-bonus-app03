@@ -2,6 +2,15 @@
   command = "npm run build"
   publish = "out"
 
+# Simple redirect proxy - most reliable for Netlify static sites
+[[redirects]]
+  from = "/api/*"
+  to = "http://212.220.105.29:8079/api/:splat"
+  status = 200
+  force = true
+  headers = {Authorization = ":Authorization"}
+
+# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"

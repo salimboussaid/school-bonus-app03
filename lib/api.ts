@@ -16,12 +16,36 @@ import {
   StudentSummary,
 } from './types';
 
-// Direct connection to backend - CORS should now be enabled on the server
-// For HTTPS deployment (Netlify), use CORS proxy to avoid mixed content issues
-// For local development, use direct HTTP connection
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  'http://212.220.105.29:8079/api';
+// API Configuration:
+// - Production (Netlify): Uses relative path /api which Netlify proxies to backend
+// - Development: Uses local Express proxy at http://localhost:3001/api
+// - Override: Set NEXT_PUBLIC_API_URL environment variable
+
+function getApiBaseUrl(): string {
+  // Allow environment variable override
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  // In browser, check if we're on localhost (development)
+  if (typeof window !== 'undefined') {
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1';
+    
+    if (isLocalhost) {
+      // Development: use local proxy
+      return 'http://localhost:3001/api';
+    } else {
+      // Production: use relative path (Netlify will proxy)
+      return '/api';
+    }
+  }
+
+  // Server-side rendering fallback
+  return '/api';
+}
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export class ApiError extends Error {
   constructor(

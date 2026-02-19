@@ -2,7 +2,33 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { setAuthCredentials, userApi } from '@/lib/api'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import { GridBackground } from '@/components/ui/grid-background'
+import { LampContainer } from '@/components/ui/lamp'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { LanguageSwitcher } from '@/components/language-switcher'
+import { Language, translations } from '@/lib/translations'
+import { Home } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 export default function AuthPage() {
   const router = useRouter()
@@ -10,6 +36,9 @@ export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('ru')
+  
+  const t = translations[currentLanguage]
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,104 +82,108 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] p-4">
-      <div className="max-w-md mx-auto pt-8">
-        <h1 className="text-3xl font-bold mb-8">Авторизация</h1>
-        
-        <div className="bg-white rounded-3xl p-8 shadow-sm border-2 border-blue-500">
-          <h2 className="text-2xl font-semibold text-center mb-8">Авторизация</h2>
-          
-          <form onSubmit={handleLogin} className="space-y-6">
-            {/* Login field - disabled */}
-            <div>
-              <label className="block text-sm mb-2 text-gray-700">
-                Логин*
-              </label>
-              <input
-                type="text"
-                value="admin"
-                disabled
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 text-gray-600 cursor-not-allowed"
-              />
-            </div>
+    <GridBackground>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 relative">
+        {/* Lamp Effect Positioned Above Card */}
+        <div className="absolute top-0 left-0 right-0 w-full h-[60vh]">
+          <LampContainer className="bg-transparent min-h-[60vh]">
+            <div className="h-20"></div>
+          </LampContainer>
+        </div>
 
-            {/* Password field */}
-            <div>
-              <label className="block text-sm mb-2 text-gray-700">
-                Пароль*
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    {showPassword ? (
-                      <>
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                        <line x1="1" y1="1" x2="23" y2="23" />
-                      </>
-                    ) : (
-                      <>
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                      </>
-                    )}
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-lg">
-                <div className="font-medium mb-1">Ошибка входа:</div>
-                <div>{error}</div>
-                {error.includes('Ошибка подключения') && (
-                  <div className="mt-2 text-xs text-red-600">
-                    Примечание: Если вы видите эту ошибку на HTTPS сайте, возможно браузер блокирует HTTP API.
+        {/* Login Card Container */}
+        <div className="relative z-10 w-full max-w-sm mt-20">
+          <Card className="border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-black shadow-2xl">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-black dark:text-white">
+                {t.authTitle}
+              </CardTitle>
+              <CardDescription className="text-gray-700 dark:text-gray-300">
+                {t.authDescription}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleLogin}>
+                <div className="flex flex-col gap-6">
+                  <div className="grid gap-2">
+                    <Label htmlFor="login" className="text-black dark:text-white">
+                      {t.authLoginLabel}
+                    </Label>
+                    <Input
+                      id="login"
+                      type="text"
+                      value="admin"
+                      disabled
+                      className="bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                      autoComplete="username"
+                    />
                   </div>
-                )}
-              </div>
-            )}
+                  <div className="grid gap-2">
+                    <Label htmlFor="password" className="text-black dark:text-white">
+                      {t.authPasswordLabel}
+                    </Label>
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="bg-white dark:bg-black border-gray-300 dark:border-gray-700 text-black dark:text-white"
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-sm text-red-600 dark:text-red-400">
+                      {error}
+                    </p>
+                  )}
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter>
+              <Button
+                type="submit"
+                onClick={handleLogin}
+                disabled={loading}
+                className="w-full bg-black text-white dark:bg-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 border border-black dark:border-white rounded-full h-10"
+              >
+                {loading ? t.authLoading : t.authLoginButton}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
 
-            {/* Login button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              {loading ? 'Вход...' : 'Войти'}
-              {!loading && (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              )}
-            </button>
-          </form>
+        {/* Breadcrumb Navigation */}
+        <div className="absolute bottom-8 left-0 right-0 px-4">
+          <div className="max-w-7xl mx-auto">
+            <Breadcrumb>
+              <BreadcrumbList className="flex items-center justify-center gap-3">
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/" className="flex items-center gap-1.5 text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-400 font-medium">
+                      <Home className="h-4 w-4" />
+                      <span>{t.authHome}</span>
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="text-gray-400" />
+                <BreadcrumbItem>
+                  <ThemeToggle />
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="text-gray-400" />
+                <BreadcrumbItem>
+                  <LanguageSwitcher
+                    currentLanguage={currentLanguage}
+                    onLanguageChange={setCurrentLanguage}
+                    dropdownDirection="up"
+                  />
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
         </div>
       </div>
-    </div>
+    </GridBackground>
   )
 }
