@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { userApi, groupApi, ApiError, clearAuthCredentials } from '@/lib/api'
 import { CoinsHistoryRecord, GroupDTO, UserDTO } from '@/lib/types'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 
 interface HistoryRecord {
   id: number
@@ -237,104 +238,24 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full bg-[#f4f9fd] items-center justify-center">
-        <div className="text-gray-500">Загрузка...</div>
+      <div className="flex-1 min-h-screen bg-[#FFFFFF] dark:bg-[#000000] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#000000] dark:border-[#FFFFFF]"></div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#f4f9fd]">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col">
-        <nav className="flex-1 px-4 pt-8 space-y-2">
-          <button
-            onClick={() => router.push('/profile')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Профиль</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/users')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span>Пользователи</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/groups')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
-            </svg>
-            <span>Группы</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/gifts')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
-            <span>Подарки</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/orders')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 2v2m6-2v2M4 6h16M5 10h14v10H5V10z" />
-            </svg>
-            <span>Заказы</span>
-          </button>
-
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-left bg-[#132440]/10 text-[#132440] font-medium rounded-xl border-l-4 border-[#132440]">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            <span>История</span>
-          </button>
-        </nav>
-
-        <div className="p-6 mt-auto border-t">
-          <button
-            onClick={() => {
-              clearAuthCredentials()
-              router.push('/auth')
-            }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-            <span>Выйти</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {/* Top Header */}
-        <div className="bg-white border-b px-10 py-6 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-800">История зачислений</h1>
+    <div className="flex-1 min-h-screen bg-[#FFFFFF] dark:bg-[#000000]">
+      {/* Top Header */}
+      <div className="border-b border-gray-200 dark:border-gray-800 px-6 md:px-10 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="md:hidden" />
+            <h1 className="text-3xl font-bold text-[#000000] dark:text-[#FFFFFF]">История</h1>
+          </div>
           <button
             onClick={() => setShowFilterModal(true)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] rounded-lg transition-colors"
             title="Фильтры"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -342,20 +263,21 @@ export default function HistoryPage() {
             </svg>
           </button>
         </div>
+      </div>
 
-        {/* Error message */}
-        {error && (
-          <div className="mx-10 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
-            {error}
-          </div>
-        )}
+      {/* Error message */}
+      {error && (
+        <div className="mx-6 md:mx-10 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
+          {error}
+        </div>
+      )}
 
-        {/* Content Area */}
-        <div className="p-10">
-          {/* Filter Modal */}
-          {showFilterModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 p-4">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mt-20 max-h-[80vh] overflow-hidden flex flex-col">
+      {/* Content Area */}
+      <div className="p-6 md:p-10">
+        {/* Filter Modal */}
+        {showFilterModal && (
+            <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-start justify-end z-50 p-4">
+              <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl shadow-2xl w-full max-w-md mt-20 max-h-[80vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-800">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b">
                   <h2 className="text-xl font-semibold text-gray-800">Фильтр</h2>
@@ -441,10 +363,10 @@ export default function HistoryPage() {
             </div>
           )}
 
-          {/* History Table */}
-          <div className="space-y-3">
+        {/* History Table */}
+        <div className="space-y-3">
             {paginatedRecords.length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center text-gray-400">
+              <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-12 text-center text-gray-400">
                 Нет записей
               </div>
             ) : (
@@ -453,26 +375,26 @@ export default function HistoryPage() {
                   key={record.id} 
                   className={`rounded-xl border-2 shadow-sm p-5 ${
                     index === 0 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 bg-white'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
+                      : 'border-gray-200 dark:border-gray-800 bg-[#FFFFFF] dark:bg-[#000000]'
                   }`}
                 >
                   <div className="grid grid-cols-5 gap-6">
                     <div>
                       <div className="text-xs text-gray-400 mb-1">ФИО ученика</div>
-                      <div className="text-sm text-gray-900">{record.student}</div>
+                      <div className="text-sm text-[#000000] dark:text-[#FFFFFF]">{record.student}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-400 mb-1">ФИО преподавателя</div>
-                      <div className="text-sm text-gray-900">{record.teacher}</div>
+                      <div className="text-sm text-[#000000] dark:text-[#FFFFFF]">{record.teacher}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-400 mb-1">Группа</div>
-                      <div className="text-sm text-gray-900">{record.group}</div>
+                      <div className="text-sm text-[#000000] dark:text-[#FFFFFF]">{record.group}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-400 mb-1">Дата зачисления</div>
-                      <div className="text-sm text-gray-900">{record.date}</div>
+                      <div className="text-sm text-[#000000] dark:text-[#FFFFFF]">{record.date}</div>
                     </div>
                     <div>
                       <div className="text-xs text-gray-400 mb-1">Кол-во алгокоинов</div>
@@ -484,8 +406,8 @@ export default function HistoryPage() {
             )}
           </div>
 
-          {/* Pagination */}
-          {filteredRecords.length > 0 && (
+        {/* Pagination */}
+        {filteredRecords.length > 0 && (
             <div className="flex items-center justify-end mt-6">
               <span className="text-sm text-gray-600 mr-4">
                 {startIndex + 1}-{Math.min(endIndex, filteredRecords.length)} из {filteredRecords.length}
@@ -512,8 +434,7 @@ export default function HistoryPage() {
               </div>
             </div>
           )}
-        </div>
-      </main>
+      </div>
     </div>
   )
 }

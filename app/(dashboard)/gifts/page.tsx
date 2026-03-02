@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'  
 import { presentApi, ApiError, clearAuthCredentials, API_BASE_URL } from '@/lib/api'
 import { MobilePresentResponse } from '@/lib/types'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 
 // Local Gift type for UI
 interface Gift {
@@ -316,123 +317,42 @@ export default function GiftsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full bg-[#f4f9fd] items-center justify-center">
-        <div className="text-gray-500">Загрузка...</div>
+      <div className="flex-1 min-h-screen bg-[#FFFFFF] dark:bg-[#000000] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#000000] dark:border-[#FFFFFF]"></div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#f4f9fd]">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col">
-        <nav className="flex-1 px-4 pt-8 space-y-2">
+    <div className="flex-1 min-h-screen bg-[#FFFFFF] dark:bg-[#000000]">
+      {/* Top Header */}
+      <div className="border-b border-gray-200 dark:border-gray-800 px-6 md:px-10 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="md:hidden" />
+            <h1 className="text-3xl font-bold text-[#000000] dark:text-[#FFFFFF]">Подарки</h1>
+          </div>
           <button
-            onClick={() => router.push('/profile')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+            onClick={openCreateModal}
+            className="bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] px-6 py-3 rounded-full transition-colors flex items-center gap-2 border border-[#000000] dark:border-[#FFFFFF]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
+              <path d="M12 5v14M5 12h14" />
             </svg>
-            <span>Профиль</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/users')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span>Пользователи</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/groups')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
-            </svg>
-            <span>Группы</span>
-          </button>
-
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-left bg-[#132440]/10 text-[#132440] font-medium rounded-xl border-l-4 border-[#132440]">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
-            <span>Подарки</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/orders')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 2v2m6-2v2M4 6h16M5 10h14v10H5V10z" />
-            </svg>
-            <span>Заказы</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/history')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            <span>История</span>
-          </button>
-        </nav>
-
-        <div className="p-6 mt-auto border-t">
-          <button
-            onClick={() => {
-              clearAuthCredentials()
-              router.push('/auth')
-            }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-            <span>Выйти</span>
+            <span className="font-medium">Добавить подарок</span>
           </button>
         </div>
-      </aside>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {/* Top Header */}
-        <div className="bg-white border-b px-10 py-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-800">Подарки</h1>
-            <button
-              onClick={openCreateModal}
-              className="bg-[#132440] text-white px-6 py-3 rounded-xl hover:bg-[#0d1a2e] transition-colors flex items-center gap-2 shadow-sm"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              <span className="font-medium">Добавить подарок</span>
-            </button>
-          </div>
+      {/* Error message */}
+      {error && (
+        <div className="mx-6 md:mx-10 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
+          {error}
         </div>
+      )}
 
-        {/* Error message */}
-        {error && (
-          <div className="mx-10 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
-            {error}
-          </div>
-        )}
-
-        {/* Content Area */}
-        <div className="p-10">
+      {/* Content Area */}
+      <div className="p-6 md:p-10">
           {/* Category Tabs */}
           <div className="mb-8 flex items-center gap-3 flex-wrap">
             {categories.length === 0 ? (
@@ -442,10 +362,10 @@ export default function GiftsPage() {
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                  className={`px-6 py-3 rounded-full font-medium transition-all ${
                     selectedCategory === category
-                      ? 'bg-[#132440] text-white shadow-md'
-                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                      ? 'bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#000000] dark:border-[#FFFFFF]'
+                      : 'bg-transparent text-[#000000] dark:text-[#FFFFFF] border border-[#000000] dark:border-[#FFFFFF] hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a]'
                   }`}
                 >
                   {category}
@@ -459,7 +379,7 @@ export default function GiftsPage() {
             {filteredGifts.map((gift) => (
               <div
                 key={gift.id}
-                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
+                className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
               >
                 <div className="relative h-56 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
                   {gift.photoIds.length > 0 && imageBlobUrls.has(`${gift.id}-${gift.photoIds[0]}`) ? (
@@ -483,17 +403,17 @@ export default function GiftsPage() {
                   <div className="absolute top-3 right-3 flex gap-2">
                     <button
                       onClick={() => openEditModal(gift)}
-                      className="p-2 bg-white rounded-lg hover:bg-gray-50 shadow-md transition-colors"
+                      className="p-2 bg-[#FFFFFF] dark:bg-[#000000] rounded-lg hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] shadow-md transition-colors border border-gray-200 dark:border-gray-800"
                       title="Редактировать"
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-600">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-600 dark:text-gray-400">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                     </button>
                     <button
                       onClick={() => openDeleteModal(gift)}
-                      className="p-2 bg-white rounded-lg hover:bg-red-50 shadow-md transition-colors"
+                      className="p-2 bg-[#FFFFFF] dark:bg-[#000000] rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 shadow-md transition-colors border border-gray-200 dark:border-gray-800"
                       title="Удалить"
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-600">
@@ -503,11 +423,11 @@ export default function GiftsPage() {
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="font-semibold text-gray-900 mb-3 text-lg">{gift.name}</h3>
+                  <h3 className="font-semibold text-[#000000] dark:text-[#FFFFFF] mb-3 text-lg">{gift.name}</h3>
                   <div className="flex justify-between items-center">
-                    <span className="text-[#5B4CF5] font-bold text-lg">Цена: {gift.price} алгокоинов</span>
+                    <span className="text-[#5B4CF5] dark:text-[#8B7DFF] font-bold text-lg">Цена: {gift.price} алгокоинов</span>
                   </div>
-                  <div className="mt-2 text-gray-500 text-sm">
+                  <div className="mt-2 text-gray-500 dark:text-gray-400 text-sm">
                     Кол-во в наличии: {gift.stock}
                   </div>
                 </div>
@@ -572,20 +492,19 @@ export default function GiftsPage() {
                 setShowAll(!showAll)
                 setCurrentPage(0)
               }}
-              className="px-5 py-2 rounded-lg text-sm font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 transition-colors"
+              className="px-5 py-2 rounded-full text-sm font-medium text-[#000000] dark:text-[#FFFFFF] bg-transparent border border-[#000000] dark:border-[#FFFFFF] hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a] transition-colors"
             >
               {showAll ? 'Постранично' : 'Показать все'}
             </button>
           </div>
         </div>
-      </main>
 
       {/* Create Gift Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50">
+          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-800">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Добавить подарок</h2>
+              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">Добавить подарок</h2>
               <button
                 onClick={() => {
                   setShowCreateModal(false)
@@ -620,7 +539,7 @@ export default function GiftsPage() {
                   placeholder="Название подарка"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.name ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {showCategorySuggestions && categories.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -663,7 +582,7 @@ export default function GiftsPage() {
                   max="9999"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.price ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
               </div>
@@ -679,7 +598,7 @@ export default function GiftsPage() {
                   max="999"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.stock ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
               </div>
@@ -731,7 +650,7 @@ export default function GiftsPage() {
 
               <button
                 onClick={handleCreateGift}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg mt-4"
+                className="w-full bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] font-medium py-3 rounded-full mt-4 border border-[#000000] dark:border-[#FFFFFF]"
               >
                 Создать
               </button>
@@ -742,10 +661,10 @@ export default function GiftsPage() {
 
       {/* Edit Gift Modal */}
       {showEditModal && selectedGift && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50">
+          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-800">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Редактировать подарок</h2>
+              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">Редактировать подарок</h2>
               <button
                 onClick={() => {
                   setShowEditModal(false)
@@ -780,7 +699,7 @@ export default function GiftsPage() {
                   placeholder="Название подарка"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.name ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {showCategorySuggestions && categories.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
@@ -823,7 +742,7 @@ export default function GiftsPage() {
                   max="9999"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.price ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
               </div>
@@ -839,7 +758,7 @@ export default function GiftsPage() {
                   max="999"
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.stock ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
               </div>
@@ -889,7 +808,7 @@ export default function GiftsPage() {
 
               <button
                 onClick={handleEditGift}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg mt-4"
+                className="w-full bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] font-medium py-3 rounded-full mt-4 border border-[#000000] dark:border-[#FFFFFF]"
               >
                 Сохранить
               </button>
@@ -900,13 +819,13 @@ export default function GiftsPage() {
 
       {/* Delete Gift Modal */}
       {showDeleteModal && selectedGift && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50">
+          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-800">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Удалить подарок</h2>
+              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">Удалить подарок</h2>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -920,13 +839,13 @@ export default function GiftsPage() {
               </div>
             )}
 
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               Подарок &quot;{selectedGift.name}&quot; будет удален навсегда. Вы точно хотите его удалить?
             </p>
 
             <button
               onClick={handleDeleteGift}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full"
             >
               Удалить
             </button>
@@ -936,3 +855,4 @@ export default function GiftsPage() {
     </div>
   )
 }
+

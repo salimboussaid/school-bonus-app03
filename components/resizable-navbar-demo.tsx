@@ -65,10 +65,10 @@ export default function NavbarDemo({ currentLanguage, onLanguageChange, navLabel
             />
             <ThemeToggle />
             <Link href="/auth">
-              <NavbarButton variant="secondary">{navLabels.login}</NavbarButton>
+              <NavbarButton as="span" variant="secondary">{navLabels.login}</NavbarButton>
             </Link>
             <Link href="/auth">
-              <NavbarButton variant="dark">{navLabels.getStarted}</NavbarButton>
+              <NavbarButton as="span" variant="dark">{navLabels.getStarted}</NavbarButton>
             </Link>
           </div>
         </NavBody>

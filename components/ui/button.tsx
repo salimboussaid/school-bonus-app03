@@ -21,10 +21,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "hover:bg-accent hover:text-accent-foreground": variant === "ghost",
             "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground":
               variant === "outline",
-            "bg-black text-white shadow hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200":
+            "bg-[#000000] text-[#FFFFFF] shadow hover:bg-[#1a1a1a] dark:bg-[#FFFFFF] dark:text-[#000000] dark:hover:bg-[#e5e5e5] border border-[#000000] dark:border-[#FFFFFF]":
               variant === "primary",
-            "bg-transparent text-black shadow-none dark:text-white": variant === "secondary",
-            "bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white hover:bg-gray-900 dark:hover:bg-gray-100":
+            "bg-transparent text-[#000000] shadow-none dark:text-[#FFFFFF]": variant === "secondary",
+            "bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] border-2 border-[#000000] dark:border-[#FFFFFF] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5]":
               variant === "dark",
           },
           {

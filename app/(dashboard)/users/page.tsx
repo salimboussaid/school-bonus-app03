@@ -4,9 +4,12 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { userApi, ApiError } from '@/lib/api'
 import { UserDTO, UserRole as ApiUserRole } from '@/lib/types'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import { useLanguage } from '@/lib/language-context'
 
 export default function UsersPage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [users, setUsers] = useState<UserDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -109,46 +112,46 @@ export default function UsersPage() {
 
   // Validations
   const validateLogin = (login: string, userId?: number): string | null => {
-    if (!login) return 'Логин обязателен'
+    if (!login) return t.usersLoginRequired
     if (!/^[a-zA-Z0-9]+$/.test(login)) {
-      return 'Логин может содержать только латинские буквы и цифры'
+      return t.usersLoginInvalid
     }
     const loginExists = users.some(u => u.login === login && u.id !== userId)
-    if (loginExists) return 'Логин уже занят'
+    if (loginExists) return t.usersLoginExists
     return null
   }
 
   const validateName = (name: string, fieldName: string): string | null => {
-    if (!name) return `${fieldName} обязательно`
+    if (!name) return `${fieldName} ${t.usersRequired}`
     if (!/^[а-яА-ЯёЁa-zA-Z\s]+$/.test(name)) {
-      return `${fieldName} может содержать только буквы`
+      return `${fieldName} ${t.usersLettersOnly}`
     }
     return null
   }
 
   const validateEmail = (email: string, userId?: number): string | null => {
-    if (!email) return 'Email обязателен'
+    if (!email) return t.usersEmailRequired
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return 'Неверный формат email'
+      return t.usersEmailInvalid
     }
     const emailExists = users.some(u => u.email === email && u.id !== userId)
-    if (emailExists) return 'Email уже занят'
+    if (emailExists) return t.usersEmailExists
     return null
   }
 
   const validatePassword = (password: string): string | null => {
-    if (!password) return 'Пароль обязателен'
+    if (!password) return t.usersPasswordRequired
     if (password.length < 4) {
-      return 'Пароль должен содержать минимум 4 символа'
+      return t.usersPasswordTooShort
     }
     return null
   }
 
   const validateBirthDate = (date: string): string | null => {
-    if (!date) return 'Дата рождения обязательна'
+    if (!date) return t.usersBirthDateRequired
     // Accept format YYYY-MM-DD
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return 'Формат даты: ГГГГ-ММ-ДД'
+      return t.usersBirthDateFormat
     }
     return null
   }
@@ -302,123 +305,44 @@ export default function UsersPage() {
     )
 
   return (
-    <div className="flex h-screen w-full bg-[#f4f9fd]">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col">
-        <nav className="flex-1 px-4 pt-8 space-y-2">
-          <button
-            onClick={() => router.push('/profile')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Профиль</span>
-          </button>
-
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-left bg-[#132440]/10 text-[#132440] font-medium rounded-xl border-l-4 border-[#132440]">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span>Пользователи</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/groups')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
-            </svg>
-            <span>Группы</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/gifts')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
-            <span>Подарки</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/orders')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 2v2m6-2v2M4 6h16M5 10h14v10H5V10z" />
-            </svg>
-            <span>Заказы</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/history')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            <span>История</span>
-          </button>
-        </nav>
-
-        <div className="px-4 py-6 mt-auto">
-          <div className="h-px bg-gray-200 mb-6"></div>
-          <button
-            onClick={() => router.push('/auth')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-            <span>Выйти</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {/* Top Header */}
-        <div className="bg-white border-b px-10 py-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-800">База пользователей</h1>
-            <button
-              onClick={() => {
-                setNewUser({
-                  login: '',
-                  password: '',
-                  first_name: '',
-                  last_name: '',
-                  middle_name: '',
-                  role: 'STUDENT',
-                  email: '',
-                  date_of_birth: '',
-                })
-                setErrors({})
-                setShowCreateModal(true)
-              }}
-              className="bg-[#132440] text-white px-6 py-3 rounded-xl hover:bg-[#0d1a2e] transition-colors flex items-center gap-2 shadow-sm"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              <span className="font-medium">Создать пользователя</span>
-            </button>
+    <div className="flex-1 min-h-screen bg-[#FFFFFF] dark:bg-[#000000]">
+      {/* Top Header */}
+      <div className="border-b border-gray-200 dark:border-gray-800 px-6 md:px-10 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="md:hidden" />
+            <h1 className="text-3xl font-bold text-[#000000] dark:text-[#FFFFFF]">{t.usersTitle}</h1>
           </div>
+          <button
+            onClick={() => {
+              setNewUser({
+                login: '',
+                password: '',
+                first_name: '',
+                last_name: '',
+                middle_name: '',
+                role: 'STUDENT',
+                email: '',
+                date_of_birth: '',
+              })
+              setErrors({})
+              setShowCreateModal(true)
+            }}
+            className="bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] px-6 py-3 rounded-full transition-colors flex items-center gap-2 border border-[#000000] dark:border-[#FFFFFF]"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            <span className="font-medium">{t.usersCreateUser}</span>
+          </button>
         </div>
+      </div>
 
-        {/* Content Area */}
-        <div className="p-10">
-          {loading ? (
+      {/* Content Area */}
+      <div className="p-6 md:p-10">
+        {loading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="text-gray-500">Загрузка...</div>
+              <div className="text-gray-500">{t.usersLoading || 'Loading...'}</div>
             </div>
           ) : (
             <div className="max-w-7xl">
@@ -439,33 +363,33 @@ export default function UsersPage() {
                   </svg>
                   <input
                     type="text"
-                    placeholder="Поиск"
+                    placeholder={t.usersSearch}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#132440]/50 focus:border-[#132440]"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]"
                   />
                 </div>
 
                 <div className="flex gap-2">
                   <button
                     onClick={() => setActiveTab('STUDENT')}
-                    className={`px-6 py-2.5 rounded-xl font-medium transition-all ${
+                    className={`px-6 py-2.5 rounded-full font-medium transition-all ${
                       activeTab === 'STUDENT'
-                        ? 'bg-[#132440] text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#000000] dark:border-[#FFFFFF]'
+                        : 'bg-transparent text-[#000000] dark:text-[#FFFFFF] border border-[#000000] dark:border-[#FFFFFF] hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a]'
                     }`}
                   >
-                    Ученики
+                    {t.usersStudents}
                   </button>
                   <button
                     onClick={() => setActiveTab('TEACHER')}
-                    className={`px-6 py-2.5 rounded-xl font-medium transition-all ${
+                    className={`px-6 py-2.5 rounded-full font-medium transition-all ${
                       activeTab === 'TEACHER'
-                        ? 'bg-[#132440] text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#000000] dark:border-[#FFFFFF]'
+                        : 'bg-transparent text-[#000000] dark:text-[#FFFFFF] border border-[#000000] dark:border-[#FFFFFF] hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a]'
                     }`}
                   >
-                    Преподаватели
+                    {t.usersTeachers}
                   </button>
                 </div>
               </div>
@@ -483,25 +407,25 @@ export default function UsersPage() {
                       {/* Grid Layout for User Data */}
                       <div className="flex-1 grid grid-cols-4 gap-6">
                         <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-500 mb-1.5">ФИО</div>
+                          <div className="text-xs font-medium text-gray-500 mb-1.5">{t.usersFullName || 'Full Name'}</div>
                           <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
                           <div className="text-sm font-bold text-gray-800">{user.full_name || `${user.last_name} ${user.first_name} ${user.middle_name || ''}`}</div>
                         </div>
                         
                         <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-500 mb-1.5">Логин</div>
+                          <div className="text-xs font-medium text-gray-500 mb-1.5">{t.usersLogin}</div>
                           <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
                           <div className="text-sm font-semibold text-gray-700">{user.login}</div>
                         </div>
                         
                         <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-500 mb-1.5">Дата рождения</div>
+                          <div className="text-xs font-medium text-gray-500 mb-1.5">{t.usersBirthDate}</div>
                           <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
                           <div className="text-sm font-semibold text-gray-700">{user.date_of_birth || '-'}</div>
                         </div>
                         
                         <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-500 mb-1.5">Кол-во алгокоинов</div>
+                          <div className="text-xs font-medium text-gray-500 mb-1.5">{t.usersCoins || 'Algocoins'}</div>
                           <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
                           <div className="text-sm font-bold text-[#132440]">{user.coins || 0}</div>
                         </div>
@@ -540,7 +464,7 @@ export default function UsersPage() {
                                 <circle cx="12" cy="12" r="10" />
                                 <path d="M12 16v-4M12 8h.01" />
                               </svg>
-                              <span>Подробнее</span>
+                              <span>{t.usersDetails || 'Details'}</span>
                             </button>
                             <button
                               onClick={(e) => {
@@ -553,7 +477,7 @@ export default function UsersPage() {
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                               </svg>
-                              <span>Редактировать</span>
+                              <span>{t.usersEdit}</span>
                             </button>
                             <button
                               onClick={(e) => {
@@ -565,7 +489,7 @@ export default function UsersPage() {
                               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-500 group-hover:text-red-600">
                                 <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                               </svg>
-                              <span>Удалить</span>
+                              <span>{t.usersDelete}</span>
                             </button>
                           </div>
                         )}
@@ -577,23 +501,22 @@ export default function UsersPage() {
             </div>
           )}
         </div>
-      </main>
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => {
+        <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50" onClick={() => {
           setShowCreateModal(false)
           setErrors({})
         }}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-800" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Создать пользователя</h2>
+              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">{t.usersCreateUser}</h2>
               <button
                 onClick={() => {
                   setShowCreateModal(false)
                   setErrors({})
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -606,29 +529,29 @@ export default function UsersPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Логин*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersLogin}*</label>
                   <input
                     type="text"
                     value={newUser.login}
                     onChange={(e) => setNewUser({ ...newUser, login: e.target.value })}
-                    placeholder="Логин"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.login ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    placeholder={t.usersLogin}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.login ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.login && <p className="text-red-500 text-xs mt-1">{errors.login}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Пароль*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersPassword}*</label>
                   <input
                     type="password"
                     value={newUser.password}
                     onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    placeholder="Пароль"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.password ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    placeholder={t.usersPassword}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                 </div>
@@ -636,58 +559,58 @@ export default function UsersPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Фамилия*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersLastName}*</label>
                   <input
                     type="text"
                     value={newUser.last_name}
                     onChange={(e) => setNewUser({ ...newUser, last_name: e.target.value })}
-                    placeholder="Фамилия"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.last_name ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    placeholder={t.usersLastName.replace('*', '')}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.last_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Роль*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersRole}*</label>
                   <select
                     value={newUser.role}
                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value as ApiUserRole })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#132440]"
+                    className="w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]"
                   >
-                    <option value="STUDENT">Ученик</option>
-                    <option value="TEACHER">Преподаватель</option>
-                    <option value="ADMIN">Админ</option>
+                    <option value="STUDENT">{t.usersStudents.replace(/s$/, '')}</option>
+                    <option value="TEACHER">{t.usersTeachers.replace(/s$/, '')}</option>
+                    <option value="ADMIN">{t.usersAdmin || 'Admin'}</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Имя*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersFirstName}*</label>
                   <input
                     type="text"
                     value={newUser.first_name}
                     onChange={(e) => setNewUser({ ...newUser, first_name: e.target.value })}
-                    placeholder="Имя"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.first_name ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    placeholder={t.usersFirstName.replace('*', '')}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.first_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Отчество</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersMiddleName || 'Middle Name'}</label>
                   <input
                     type="text"
                     value={newUser.middle_name}
                     onChange={(e) => setNewUser({ ...newUser, middle_name: e.target.value })}
-                    placeholder="Отчество"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.middle_name ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    placeholder={t.usersMiddleName || 'Middle Name'}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.middle_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.middle_name && <p className="text-red-500 text-xs mt-1">{errors.middle_name}</p>}
                 </div>
@@ -695,28 +618,28 @@ export default function UsersPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Email*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersEmail}*</label>
                   <input
                     type="email"
                     value={newUser.email}
                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                    placeholder="Email"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    placeholder={t.usersEmail}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Дата рождения*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersBirthDate}*</label>
                   <input
                     type="date"
                     value={newUser.date_of_birth}
                     onChange={(e) => setNewUser({ ...newUser, date_of_birth: e.target.value })}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.date_of_birth ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.date_of_birth ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.date_of_birth && <p className="text-red-500 text-xs mt-1">{errors.date_of_birth}</p>}
                 </div>
@@ -724,9 +647,9 @@ export default function UsersPage() {
 
               <button
                 onClick={handleCreateUser}
-                className="w-full bg-[#132440] hover:bg-[#0d1a2e] text-white font-medium py-3 rounded-lg mt-4"
+                className="w-full bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] font-medium py-3 rounded-full mt-4 border border-[#000000] dark:border-[#FFFFFF]"
               >
-                Создать
+                {t.usersCreate || 'Create'}
               </button>
             </div>
           </div>
@@ -735,21 +658,21 @@ export default function UsersPage() {
 
       {/* Edit User Modal */}
       {showEditModal && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => {
+        <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50" onClick={() => {
           setShowEditModal(false)
           setSelectedUser(null)
           setErrors({})
         }}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-800" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Редактировать пользователя</h2>
+              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">{t.usersEdit}</h2>
               <button
                 onClick={() => {
                   setShowEditModal(false)
                   setSelectedUser(null)
                   setErrors({})
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -761,40 +684,40 @@ export default function UsersPage() {
               {errors.api && <div className="text-red-500 text-sm">{errors.api}</div>}
               
               <div>
-                <label className="block text-sm mb-2">Логин*</label>
+                <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Логин*</label>
                 <input
                   type="text"
                   value={editUserData.login}
                   onChange={(e) => setEditUserData({ ...editUserData, login: e.target.value })}
                   placeholder="Логин"
-                  className={`w-full px-4 py-2 rounded-lg border ${
-                    errors.login ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                  className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                    errors.login ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
                 {errors.login && <p className="text-red-500 text-xs mt-1">{errors.login}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Фамилия*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Фамилия*</label>
                   <input
                     type="text"
                     value={editUserData.last_name}
                     onChange={(e) => setEditUserData({ ...editUserData, last_name: e.target.value })}
                     placeholder="Фамилия"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.last_name ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.last_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.last_name && <p className="text-red-500 text-xs mt-1">{errors.last_name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Роль*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Роль*</label>
                   <select
                     value={editUserData.role}
                     onChange={(e) => setEditUserData({ ...editUserData, role: e.target.value as ApiUserRole })}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#132440]"
+                    className="w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]"
                   >
                     <option value="STUDENT">Ученик</option>
                     <option value="TEACHER">Преподаватель</option>
@@ -805,29 +728,29 @@ export default function UsersPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Имя*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Имя*</label>
                   <input
                     type="text"
                     value={editUserData.first_name}
                     onChange={(e) => setEditUserData({ ...editUserData, first_name: e.target.value })}
                     placeholder="Имя"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.first_name ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.first_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.first_name && <p className="text-red-500 text-xs mt-1">{errors.first_name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Отчество</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Отчество</label>
                   <input
                     type="text"
                     value={editUserData.middle_name}
                     onChange={(e) => setEditUserData({ ...editUserData, middle_name: e.target.value })}
                     placeholder="Отчество"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.middle_name ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.middle_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.middle_name && <p className="text-red-500 text-xs mt-1">{errors.middle_name}</p>}
                 </div>
@@ -835,28 +758,28 @@ export default function UsersPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Email*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Email*</label>
                   <input
                     type="email"
                     value={editUserData.email}
                     onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
                     placeholder="Email"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.email ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm mb-2">Дата рождения*</label>
+                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">Дата рождения*</label>
                   <input
                     type="date"
                     value={editUserData.date_of_birth}
                     onChange={(e) => setEditUserData({ ...editUserData, date_of_birth: e.target.value })}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      errors.date_of_birth ? 'border-red-500' : 'border-gray-300'
-                    } focus:outline-none focus:ring-2 focus:ring-[#132440]`}
+                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                      errors.date_of_birth ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.date_of_birth && <p className="text-red-500 text-xs mt-1">{errors.date_of_birth}</p>}
                 </div>
@@ -864,9 +787,9 @@ export default function UsersPage() {
 
               <button
                 onClick={handleEditUser}
-                className="w-full bg-[#132440] hover:bg-[#0d1a2e] text-white font-medium py-3 rounded-lg mt-4"
+                className="w-full bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] font-medium py-3 rounded-full mt-4 border border-[#000000] dark:border-[#FFFFFF]"
               >
-                Сохранить
+                {t.usersSave || 'Save'}
               </button>
             </div>
           </div>
@@ -875,19 +798,19 @@ export default function UsersPage() {
 
       {/* Delete User Modal */}
       {showDeleteModal && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => {
+        <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50" onClick={() => {
           setShowDeleteModal(false)
           setSelectedUser(null)
         }}>
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-800" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Удалить пользователя</h2>
+              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">{t.usersDelete}</h2>
               <button
                 onClick={() => {
                   setShowDeleteModal(false)
                   setSelectedUser(null)
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6L6 18M6 6l12 12" />
@@ -895,15 +818,15 @@ export default function UsersPage() {
               </button>
             </div>
 
-            <p className="text-gray-600 mb-6">
-              {selectedUser.full_name || `${selectedUser.last_name} ${selectedUser.first_name}`} будет удален навсегда без возможности восстановления
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              {t.usersDeleteConfirm || 'This user will be permanently deleted'}
             </p>
 
             <button
               onClick={handleDeleteUser}
-              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg"
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-full"
             >
-              Удалить
+              {t.usersDelete}
             </button>
           </div>
         </div>

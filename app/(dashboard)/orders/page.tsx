@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { orderApi, presentApi, ApiError, clearAuthCredentials, API_BASE_URL } from '@/lib/api'
 import { OrderDTO, OrderStatus } from '@/lib/types'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 
 // Local Order type for UI with Russian status
 interface Order {
@@ -306,114 +307,35 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full bg-[#f4f9fd] items-center justify-center">
-        <div className="text-gray-500">Загрузка...</div>
+      <div className="flex-1 min-h-screen bg-gray-50 dark:bg-black flex items-center justify-center">
+        <div className="text-gray-500 dark:text-gray-400">Загрузка...</div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#f4f9fd]">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col">
-        <nav className="flex-1 px-4 pt-8 space-y-2">
-          <button
-            onClick={() => router.push('/profile')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Профиль</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/users')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span>Пользователи</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/groups')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24" />
-            </svg>
-            <span>Группы</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/gifts')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
-            <span>Подарки</span>
-          </button>
-
-          <button className="w-full flex items-center gap-3 px-4 py-3 text-left bg-[#132440]/10 text-[#132440] font-medium rounded-xl border-l-4 border-[#132440]">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 2v2m6-2v2M4 6h16M5 10h14v10H5V10z" />
-            </svg>
-            <span>Заказы</span>
-          </button>
-
-          <button
-            onClick={() => router.push('/history')}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-            <span>История</span>
-          </button>
-        </nav>
-
-        <div className="p-6 mt-auto border-t">
-          <button
-            onClick={() => {
-              clearAuthCredentials()
-              router.push('/auth')
-            }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-            </svg>
-            <span>Выйти</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        {/* Top Header */}
-        <div className="bg-white border-b px-10 py-6">
-          <h1 className="text-3xl font-bold text-gray-800">Заказы</h1>
-        </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="mx-10 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
-            {error}
+    <div className="flex-1 min-h-screen bg-gray-50 dark:bg-black">
+      {/* Top Header */}
+      <div className="border-b border-gray-200 dark:border-gray-800 px-6 md:px-10 py-6 bg-white dark:bg-black">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="md:hidden" />
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Заказы</h1>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Content Area */}
-        <div className="p-10">
-          {/* Search and Tabs */}
-          <div className="flex items-center justify-between mb-8">
+      {/* Error message */}
+      {error && (
+        <div className="mx-6 md:mx-10 mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
+          {error}
+        </div>
+      )}
+
+      {/* Content Area */}
+      <div className="p-6 md:p-10">
+        {/* Search and Tabs */}
+        <div className="flex items-center justify-between mb-8">
             <div className="relative flex-1 max-w-md">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -432,27 +354,27 @@ export default function OrdersPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Поиск"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#132440]/50 focus:border-[#132440]"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border border-gray-200 dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]"
               />
             </div>
 
             <div className="flex gap-2 ml-6">
               <button
                 onClick={() => setActiveTab('active')}
-                className={`px-6 py-2.5 rounded-xl font-medium transition-all ${
+                className={`px-6 py-2.5 rounded-full font-medium transition-all ${
                   activeTab === 'active'
-                    ? 'bg-[#132440] text-white shadow-sm'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                    ? 'bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#000000] dark:border-[#FFFFFF]'
+                    : 'bg-transparent text-[#000000] dark:text-[#FFFFFF] border border-[#000000] dark:border-[#FFFFFF] hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a]'
                 }`}
               >
                 Актуальные
               </button>
               <button
                 onClick={() => setActiveTab('completed')}
-                className={`px-6 py-2.5 rounded-xl font-medium transition-all ${
+                className={`px-6 py-2.5 rounded-full font-medium transition-all ${
                   activeTab === 'completed'
-                    ? 'bg-[#132440] text-white shadow-sm'
-                    : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                    ? 'bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#000000] dark:border-[#FFFFFF]'
+                    : 'bg-transparent text-[#000000] dark:text-[#FFFFFF] border border-[#000000] dark:border-[#FFFFFF] hover:bg-[#f5f5f5] dark:hover:bg-[#1a1a1a]'
                 }`}
               >
                 Завершенные
@@ -460,17 +382,17 @@ export default function OrdersPage() {
             </div>
           </div>
 
-          {/* Orders List */}
-          <div className="space-y-4 mb-8">
+        {/* Orders List */}
+        <div className="space-y-4 mb-8">
             {displayedOrders.length === 0 ? (
-              <div className="text-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-200">
+              <div className="text-center py-16 text-gray-400 bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl border border-gray-200 dark:border-gray-800">
                 Нет заказов
               </div>
             ) : (
               displayedOrders.map((order) => (
                 <div
                   key={order.id}
-                  className={`group relative bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all duration-200 ${
+                  className={`group relative bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-200 ${
                     showOrderMenu === order.id ? 'z-50' : 'z-0'
                   }`}
                 >
@@ -497,27 +419,27 @@ export default function OrdersPage() {
                     {/* Order Info */}
                     <div className="flex-1 grid grid-cols-3 gap-6">
                       <div className="flex flex-col">
-                        <div className="text-xs text-gray-500 mb-1">Название подарка</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Название подарка</div>
                         <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
-                        <div className="font-semibold text-gray-900">{order.giftName}</div>
+                        <div className="font-semibold text-[#000000] dark:text-[#FFFFFF]">{order.giftName}</div>
                       </div>
                       
                       <div className="flex flex-col">
-                        <div className="text-xs text-gray-500 mb-1">ФИО заказчика</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">ФИО заказчика</div>
                         <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
-                        <div className="text-gray-700">{order.customerName}</div>
+                        <div className="text-gray-700 dark:text-gray-300">{order.customerName}</div>
                       </div>
                       
                       <div className="flex flex-col">
-                        <div className="text-xs text-gray-500 mb-1">Дата заказа</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Дата заказа</div>
                         <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
-                        <div className="text-gray-700">{order.orderDate}</div>
+                        <div className="text-gray-700 dark:text-gray-300">{order.orderDate}</div>
                       </div>
                     </div>
 
                     {/* Status */}
                     <div className="flex flex-col items-center">
-                      <div className="text-xs text-gray-500 mb-3">Статус</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">Статус</div>
                       <span className={`px-4 py-1.5 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                         {order.status}
                       </span>
@@ -531,7 +453,7 @@ export default function OrdersPage() {
                             e.stopPropagation()
                             setShowOrderMenu(showOrderMenu === order.id ? null : order.id)
                           }}
-                          className="p-2.5 rounded-full bg-gray-100/80 hover:bg-[#132440]/10 text-gray-600 hover:text-[#132440] transition-all duration-200"
+                          className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-all duration-200"
                         >
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="1" fill="currentColor" />
@@ -541,7 +463,7 @@ export default function OrdersPage() {
                         </button>
 
                         {showOrderMenu === order.id && (
-                          <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-[60] overflow-hidden"
+                          <div className="absolute right-0 top-full mt-2 w-56 bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 py-2 z-[60] overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {order.status === 'Заказан' && (
@@ -596,8 +518,8 @@ export default function OrdersPage() {
             )}
           </div>
 
-          {/* Pagination Controls */}
-          {!showAll && totalPages > 1 && (
+        {/* Pagination Controls */}
+        {!showAll && totalPages > 1 && (
             <div className="flex items-center justify-center gap-3">
               <button
                 onClick={() => {
@@ -641,7 +563,7 @@ export default function OrdersPage() {
             </div>
           )}
           
-          <div className="mt-6 text-center">
+        <div className="mt-6 text-center">
             <button
               onClick={() => {
                 setShowAll(!showAll)
@@ -651,9 +573,9 @@ export default function OrdersPage() {
             >
               {showAll ? 'Постранично' : 'Показать все'}
             </button>
-          </div>
+
         </div>
-      </main>
+      </div>
     </div>
   )
 }
