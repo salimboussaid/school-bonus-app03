@@ -1,6 +1,124 @@
-# School Bonus Application (AlgoCoins)
+<div align="center">
 
-Мобильное приложение начисления бонусов (алгокоинов) для школьников.
+# 🎓 School Bonus Application (AlgoCoins)
+
+### Mobile Application for Awarding Bonuses (AlgoCoins) to School Students
+
+<div>
+  <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 15" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript 5" />
+  <img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js 20" />
+  <img src="https://img.shields.io/badge/Express-4-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express 4" />
+  <img src="https://img.shields.io/badge/MongoDB-7-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB 7" />
+  <img src="https://img.shields.io/badge/Framer_Motion-Latest-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion" />
+</div>
+
+<br/>
+
+**Modern school bonus management system with AI-powered features, multi-language support, and beautiful animated UI. Manage students, groups, gifts, and bonus distributions efficiently.**
+
+</div>
+
+---
+
+---
+
+## � Key Features
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <h3>🔐 Smart Authentication</h3>
+        <p>Secure admin login with animated lamp effect and modern UI</p>
+      </td>
+      <td align="center" width="33%">
+        <h3>🌍 Multi-Language</h3>
+        <p>Full support for English, Russian, and French languages</p>
+      </td>
+      <td align="center" width="33%">
+        <h3>🎨 Dark/Light Mode</h3>
+        <p>Beautiful themes with smooth transitions and animations</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="33%">
+        <h3>👥 User Management</h3>
+        <p>Complete CRUD operations for students and administrators</p>
+      </td>
+      <td align="center" width="33%">
+        <h3>🎁 Bonus System</h3>
+        <p>Manage AlgoCoins distribution and gift redemption</p>
+      </td>
+      <td align="center" width="33%">
+        <h3>📊 Analytics</h3>
+        <p>Track history and monitor bonus activities</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
+## �📸 Project Evolution
+
+This project has been refined twice with significant UI/UX improvements:
+
+### 🗂️ Version 1 (Old Frontend - school-bonus-app01)
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%">
+        <img src="components/img/old/photo_2026-03-02_14-48-09.jpg" alt="Old Version - Login" width="100%"/>
+        <p align="center"><b>Login Page</b></p>
+      </td>
+      <td width="50%">
+        <img src="components/img/old/photo_2026-03-02_14-48-18.jpg" alt="Old Version - Dashboard" width="100%"/>
+        <p align="center"><b>Dashboard</b></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%">
+        <img src="components/img/old/photo_2026-03-02_14-48-21.jpg" alt="Old Version - Profile" width="100%"/>
+        <p align="center"><b>Profile Page</b></p>
+      </td>
+      <td width="50%">
+        <img src="components/img/old/photo_2026-03-02_14-48-24.jpg" alt="Old Version - Settings" width="100%"/>
+        <p align="center"><b>Settings</b></p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+### ✨ Version 2 (New Frontend - school-bonus-app02)
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%">
+        <img src="components/img/new/photo_2026-03-02_14-51-08.jpg" alt="New Version - Landing" width="100%"/>
+        <p align="center"><b>Modern Landing Page</b></p>
+      </td>
+      <td width="50%">
+        <img src="components/img/new/photo_2026-03-02_14-51-16.jpg" alt="New Version - Auth" width="100%"/>
+        <p align="center"><b>Animated Login with Lamp Effect</b></p>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%">
+        <img src="components/img/new/photo_2026-03-02_14-51-39.jpg" alt="New Version - Dashboard" width="100%"/>
+        <p align="center"><b>Enhanced Dashboard</b></p>
+      </td>
+      <td width="50%">
+        <img src="components/img/new/photo_2026-03-02_14-51-42.jpg" alt="New Version - Features" width="100%"/>
+        <p align="center"><b>Glowing Features Grid</b></p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
 
 ## 📌 Версии проекта
 
@@ -326,3 +444,52 @@ Proxy сервер (`server.js`) решает проблему CORS, перен�
 - **Дата:** 26.08.2025
 - **Организация:** ООО "АКАДЕМИЯ ПРИКЛАДНОЙ ИНФОРМАТИКИ"
 - **Период реализации:** 01.09.2025 - 31.01.2026
+---
+
+## 👨‍💻 Developer & Contact
+
+<div align="center">
+
+### Mohamed Salim Boussaid
+
+<div style="margin: 20px 0;">
+  <a href="https://github.com/salimboussaid" target="_blank">
+    <img src="https://img.shields.io/badge/GitHub-@salimbsd-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  <a href="https://www.linkedin.com/in/mohamed-salim-boussaid-1ba90a228/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-Mohamed_Salim_Boussaid-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+  <a href="mailto:salimboussaid@mail.ru">
+    <img src="https://img.shields.io/badge/Email-salimboussaid@mail.ru-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" />
+  </a>
+</div>
+
+**Developed with 💙 by Mohamed Salim Boussaid**
+
+</div>
+
+---
+
+<div align="center">
+
+### 🌟 Technologies & Frameworks Used
+
+```
+Frontend                Backend              UI/UX                    Tools
+├─ Next.js 15          ├─ Node.js 20        ├─ Framer Motion        ├─ TypeScript
+├─ React 19            ├─ Express.js        ├─ Tailwind CSS         ├─ Git
+├─ TypeScript          ├─ MongoDB 7         ├─ shadcn/ui            ├─ npm
+└─ Radix UI            └─ Prisma            └─ Lucide Icons         └─ VS Code
+```
+
+</div>
+
+---
+
+<div align="center">
+  
+**⭐ Star this repo if you find it helpful!**
+
+Made with ❤️ in 2025-2026
+
+</div>
