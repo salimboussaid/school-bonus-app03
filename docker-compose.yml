@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: school-bonus-frontend
+    ports:
+      - "3000:80"      # http://localhost:3000 → nginx inside container
+    environment:
+      # Change this to your backend IP:PORT without rebuilding the image
+      - BACKEND_URL=http://212.220.105.29:8079
+    restart: unless-stopped
