@@ -20,6 +20,7 @@ export interface UserDTO {
   email: string;
   date_of_birth: string;
   coins?: number;
+  exp?: number;
 }
 
 export interface PhotoResponse {
@@ -137,4 +138,37 @@ export interface StudentSummary {
   login: string;
   birthDate?: string;
   coins?: number | string;
+  exp?: number | string;
+}
+
+export interface TaskItem {
+  id: string;
+  title: string;
+  createdAt: string;
+  description: string;
+  teacherName: string;
+  reward: string;
+  deadline: string;
+  groupName: string;
+}
+
+export interface ProjectComment {
+  id: string;
+  authorName: string;
+  text: string;
+}
+
+export interface ProjectItem {
+  id: string;
+  title: string;
+  description: string;
+  link: string;
+  authorId?: number;
+  authorLogin?: string;
+  authorName: string;
+  teacherName: string;
+  likes: number;
+  accessLabel: string;
+  comments: ProjectComment[];
+  updatedAt: string;
 }

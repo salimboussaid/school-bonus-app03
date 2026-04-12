@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { User2, Users, Asterisk, Gift, ShoppingBag, History, LogOut, Globe, Moon, Sun } from "lucide-react"
+import { User2, Users, Asterisk, Gift, ShoppingBag, History, LogOut, Globe, Sun, ListTodo, FolderKanban } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -75,6 +75,16 @@ export function AppSidebar({ currentLanguage = "ru", onLanguageChange }: AppSide
       title: t.sidebarHistory,
       icon: History,
       href: "/history",
+    },
+    {
+      title: t.sidebarTasks,
+      icon: ListTodo,
+      href: "/tasks",
+    },
+    {
+      title: t.sidebarProjects,
+      icon: FolderKanban,
+      href: "/projects",
     },
   ]
 

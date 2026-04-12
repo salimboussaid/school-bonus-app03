@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
 import { userApi, ApiError } from '@/lib/api'
 import { UserDTO, UserRole as ApiUserRole } from '@/lib/types'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useLanguage } from '@/lib/language-context'
 
 export default function UsersPage() {
-  const router = useRouter()
   const { t } = useLanguage()
   const [users, setUsers] = useState<UserDTO[]>([])
   const [loading, setLoading] = useState(true)
@@ -23,7 +21,6 @@ export default function UsersPage() {
   // Form states for Create User
   const [newUser, setNewUser] = useState<UserDTO>({
     login: '',
-    password: '',
     first_name: '',
     last_name: '',
     middle_name: '',
@@ -45,6 +42,23 @@ export default function UsersPage() {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const parseNumericValue = (value: unknown): number => {
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value
+    }
+
+    if (typeof value === 'string') {
+      const parsed = parseInt(value, 10)
+      return Number.isFinite(parsed) ? parsed : 0
+    }
+
+    return 0
+  }
+
+  const getStudentExp = (student: Record<string, unknown>): number => {
+    return parseNumericValue(student.exp ?? student.experience ?? student.expCount ?? student.coins)
+  }
 
   useEffect(() => {
     loadUsers()
@@ -82,7 +96,8 @@ export default function UsersPage() {
           full_name: s.fullName,
           email: '',
           date_of_birth: s.birthDate || '',
-          coins: typeof s.coins === 'string' ? parseInt(s.coins, 10) || 0 : (s.coins || 0),
+          coins: parseNumericValue(s.coins),
+          exp: getStudentExp(s as unknown as Record<string, unknown>),
         }))
         setUsers(mapped)
       } else {
@@ -98,6 +113,7 @@ export default function UsersPage() {
           email: '',
           date_of_birth: '',
           coins: 0,
+          exp: 0,
         }))
         setUsers(mapped)
       }
@@ -139,14 +155,6 @@ export default function UsersPage() {
     return null
   }
 
-  const validatePassword = (password: string): string | null => {
-    if (!password) return t.usersPasswordRequired
-    if (password.length < 4) {
-      return t.usersPasswordTooShort
-    }
-    return null
-  }
-
   const validateBirthDate = (date: string): string | null => {
     if (!date) return t.usersBirthDateRequired
     // Accept format YYYY-MM-DD
@@ -162,8 +170,6 @@ export default function UsersPage() {
     const loginError = validateLogin(newUser.login)
     if (loginError) newErrors.login = loginError
 
-    const passwordError = validatePassword(newUser.password || '')
-    if (passwordError) newErrors.password = passwordError
 
     const firstNameError = validateName(newUser.first_name, 'Имя')
     if (firstNameError) newErrors.first_name = firstNameError
@@ -188,12 +194,12 @@ export default function UsersPage() {
     }
 
     try {
-      await userApi.createUser(newUser)
+      const { password: _password, ...createUserPayload } = newUser
+      await userApi.createUser(createUserPayload as UserDTO)
       await loadUsers() // Reload users to get properly formatted data
       setShowCreateModal(false)
       setNewUser({
         login: '',
-        password: '',
         first_name: '',
         last_name: '',
         middle_name: '',
@@ -317,7 +323,6 @@ export default function UsersPage() {
             onClick={() => {
               setNewUser({
                 login: '',
-                password: '',
                 first_name: '',
                 last_name: '',
                 middle_name: '',
@@ -425,9 +430,9 @@ export default function UsersPage() {
                         </div>
                         
                         <div className="flex flex-col">
-                          <div className="text-xs font-medium text-gray-500 mb-1.5">{t.usersCoins || 'Algocoins'}</div>
+                          <div className="text-xs font-medium text-gray-500 mb-1.5">{t.usersExp || 'EXP'}</div>
                           <div className="h-px bg-gradient-to-r from-gray-200 to-transparent mb-2"></div>
-                          <div className="text-sm font-bold text-[#132440]">{user.coins || 0}</div>
+                          <div className="text-sm font-bold text-[#132440]">{user.exp || 0}</div>
                         </div>
                       </div>
 
@@ -527,7 +532,7 @@ export default function UsersPage() {
             <div className="space-y-4">
               {errors.api && <div className="text-red-500 text-sm">{errors.api}</div>}
               
-              <div className="grid grid-cols-2 gap-4">
+              <div>
                 <div>
                   <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersLogin}*</label>
                   <input
@@ -540,20 +545,6 @@ export default function UsersPage() {
                     } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
                   {errors.login && <p className="text-red-500 text-xs mt-1">{errors.login}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersPassword}*</label>
-                  <input
-                    type="password"
-                    value={newUser.password}
-                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                    placeholder={t.usersPassword}
-                    className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
-                      errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
-                    } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
-                  />
-                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                 </div>
               </div>
 
