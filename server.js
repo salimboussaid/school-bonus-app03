@@ -4,7 +4,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const PORT = 3001;
-const BACKEND_URL = 'http://212.220.105.29:8079';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8080';
 
 // Enable CORS for frontend
 app.use(cors({

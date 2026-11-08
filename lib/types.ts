@@ -72,8 +72,9 @@ export interface CoinsHistoryRecord {
 }
 
 export interface AddCoinsRequest {
-  coins: number;
-  reason?: string;
+  studentId: number;
+  amount: number;
+  description: string;
 }
 
 // Order Types

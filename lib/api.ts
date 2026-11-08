@@ -165,21 +165,23 @@ export const userApi = {
   },
 
   // Add coins to a student
-  addCoins: async (userId: number, coins: number, reason?: string): Promise<UserDTO> => {
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/coins`, {
-      method: 'PUT',
+  addCoins: async (studentId: number, amount: number, description: string): Promise<void> => {
+    const request: AddCoinsRequest = { studentId, amount, description };
+    const response = await fetch(`${API_BASE_URL}/coin-transactions`, {
+      method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ coins, reason } as AddCoinsRequest),
+      body: JSON.stringify(request),
     });
-    return handleResponse<UserDTO>(response);
+    await handleResponse<void>(response);
   },
 
   // Get coins history for a specific user
   getCoinsHistory: async (userId: number): Promise<CoinsHistoryRecord[]> => {
-    const response = await fetch(`${API_BASE_URL}/users/${userId}/coinsHistory`, {
+    const response = await fetch(`${API_BASE_URL}/coin-transactions/${userId}`, {
       headers: getAuthHeaders(),
     });
-    return handleResponse<CoinsHistoryRecord[]>(response);
+    const history = await handleResponse<PageableResponse<CoinsHistoryRecord>>(response);
+    return history.content;
   },
 
   // Get all coins history (paginated) for a specific user
@@ -191,7 +193,7 @@ export const userApi = {
     sortDir = 'desc'
   ): Promise<PageableResponse<CoinsHistoryRecord>> => {
     const response = await fetch(
-      `${API_BASE_URL}/users/${userId}/coinsHistory?page=${page}&size=${size}&sortBy=${encodeURIComponent(sortBy)}&sortDir=${encodeURIComponent(sortDir)}`,
+      `${API_BASE_URL}/coin-transactions/${userId}?page=${page}&size=${size}&sortBy=${encodeURIComponent(sortBy)}&sortDir=${encodeURIComponent(sortDir)}`,
       { headers: getAuthHeaders() }
     );
     return handleResponse<PageableResponse<CoinsHistoryRecord>>(response);

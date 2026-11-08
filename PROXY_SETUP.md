@@ -6,6 +6,18 @@ The application now uses an Express.js proxy server to bypass CORS restrictions.
 
 ## 🚀 How to Run
 
+Start the local backend first (Docker Desktop must be running):
+
+```bash
+git clone --branch tasks/277427-bugfix --single-branch https://github.com/NikitinGit/School-back.git
+cd School-back
+docker compose up -d --build
+```
+
+The API runs at `http://localhost:8080`, with Swagger at
+`http://localhost:8080/swagger-ui/index.html`. Use Basic Auth `admin` / `admin`.
+Then run the frontend commands below from the frontend repository.
+
 ### Option 1: Run Everything at Once (Recommended)
 
 Open a terminal and run:
@@ -47,7 +59,7 @@ npm run dev
    {
      "status": "ok",
      "message": "Proxy server is running",
-     "target": "http://212.220.105.29:8079"
+     "target": "http://localhost:8080"
    }
    ```
 
@@ -77,7 +89,7 @@ npm run dev
 ```
 ┌─────────────┐         ┌──────────────┐         ┌─────────────┐
 │   Browser   │         │Proxy Server  │         │ Backend API │
-│ :3000       │────────▶│ :3001        │────────▶│ :8079       │
+│ :3000       │────────▶│ :3001        │────────▶│ :8080       │
 │             │         │              │         │             │
 │ Next.js     │◀────────│ Express.js   │◀────────│ Spring Boot │
 └─────────────┘         └──────────────┘         └─────────────┘
@@ -86,7 +98,7 @@ npm run dev
 
 **Request Flow:**
 1. Frontend sends request to `http://localhost:3001/api/users/me`
-2. Proxy receives it and forwards to `http://212.220.105.29:8079/api/users/me`
+2. Proxy receives it and forwards to `http://localhost:8080/api/users/me`
 3. Backend responds to proxy
 4. Proxy adds CORS headers and sends back to frontend
 5. ✅ No CORS errors!
@@ -99,10 +111,12 @@ Edit `.env.local` to change the proxy URL:
 NEXT_PUBLIC_API_URL=http://localhost:3001/api
 ```
 
-To change the backend target, edit `server.js`:
+The proxy defaults to `http://localhost:8080`. To override the backend target,
+set `BACKEND_URL` in the shell before starting the proxy. For example, in PowerShell:
 
-```javascript
-target: 'http://212.220.105.29:8079',
+```powershell
+$env:BACKEND_URL = 'http://localhost:8080'
+npm.cmd run dev:all
 ```
 
 ## 📝 Available Scripts
@@ -125,7 +139,7 @@ target: 'http://212.220.105.29:8079',
 **Problem: "fetch failed" or CORS errors**
 - ✅ Make sure proxy server is running on port 3001
 - ✅ Check console logs in proxy terminal
-- ✅ Verify backend is accessible at http://212.220.105.29:8079
+- ✅ Verify backend is accessible at http://localhost:8080/swagger-ui/index.html
 
 **Problem: Port 3001 already in use**
 ```bash
@@ -136,7 +150,7 @@ taskkill /PID <PID_NUMBER> /F
 
 **Problem: Cannot connect to backend**
 - ✅ Check if backend server is running
-- ✅ Try accessing http://212.220.105.29:8079/api/users/me directly in browser
+- ✅ Try accessing http://localhost:8080/api/users/me with Basic Auth `admin` / `admin`
 - ✅ Check firewall settings
 
 ## 🎉 Success!
@@ -144,7 +158,7 @@ taskkill /PID <PID_NUMBER> /F
 If you see this in the proxy terminal:
 ```
 🚀 Proxy server running on http://localhost:3001
-📡 Proxying requests to: http://212.220.105.29:8079
+📡 Proxying requests to: http://localhost:8080
 ✅ CORS enabled for: http://localhost:3000
 ```
 
