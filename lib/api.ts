@@ -175,25 +175,39 @@ export const userApi = {
     await handleResponse<void>(response);
   },
 
-  // Get coins history for a specific user
-  getCoinsHistory: async (userId: number): Promise<CoinsHistoryRecord[]> => {
-    const response = await fetch(`${API_BASE_URL}/coin-transactions/${userId}`, {
+  // Get the first page of coins history for a student
+  getCoinsHistory: async (studentId: number): Promise<CoinsHistoryRecord[]> => {
+    const response = await fetch(`${API_BASE_URL}/coin-transactions/${studentId}`, {
       headers: getAuthHeaders(),
     });
     const history = await handleResponse<PageableResponse<CoinsHistoryRecord>>(response);
     return history.content;
   },
 
-  // Get all coins history (paginated) for a specific user
-  getAllCoinsHistory: async (
-    userId: number,
+  // Get coins history (paginated) for a student
+  getStudentCoinsHistory: async (
+    studentId: number,
     page = 0,
     size = 5,
     sortBy = 'enrollmentDate',
     sortDir = 'desc'
   ): Promise<PageableResponse<CoinsHistoryRecord>> => {
     const response = await fetch(
-      `${API_BASE_URL}/coin-transactions/${userId}?page=${page}&size=${size}&sortBy=${encodeURIComponent(sortBy)}&sortDir=${encodeURIComponent(sortDir)}`,
+      `${API_BASE_URL}/coin-transactions/${studentId}?page=${page}&size=${size}&sortBy=${encodeURIComponent(sortBy)}&sortDir=${encodeURIComponent(sortDir)}`,
+      { headers: getAuthHeaders() }
+    );
+    return handleResponse<PageableResponse<CoinsHistoryRecord>>(response);
+  },
+
+  // Get coins issued by the current teacher or admin (paginated)
+  getAllCoinsHistory: async (
+    page = 0,
+    size = 5,
+    sortBy = 'enrollmentDate',
+    sortDir = 'desc'
+  ): Promise<PageableResponse<CoinsHistoryRecord>> => {
+    const response = await fetch(
+      `${API_BASE_URL}/coin-transactions/issued?page=${page}&size=${size}&sortBy=${encodeURIComponent(sortBy)}&sortDir=${encodeURIComponent(sortDir)}`,
       { headers: getAuthHeaders() }
     );
     return handleResponse<PageableResponse<CoinsHistoryRecord>>(response);

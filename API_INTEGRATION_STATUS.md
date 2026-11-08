@@ -84,15 +84,16 @@
   - PUT /api/orders/{id}/status
   - etc.
 
-### 8. History Page (`app/history/page.tsx`)
-**Status:** No API endpoints available yet
-**Recommendation:**
-- Keep mock data for now
-- Add TODO comments indicating endpoints needed:
-  - GET /api/transactions or /api/history
-  - POST /api/transactions (create bonus transaction)
-  - Filter by group, teacher, date range
-  - etc.
+### 8. History Page (`app/(dashboard)/history/page.tsx`)
+
+**Status:** Student history is connected to the coin transaction API.
+
+- `GET /api/coin-transactions/{studentId}` — student history; the page uses
+  `userApi.getStudentCoinsHistory(studentId, page, size, sortBy, sortDir)`.
+- `GET /api/coin-transactions/issued` — history of bonuses issued by the current
+  teacher or admin; available through `userApi.getAllCoinsHistory(page, size, sortBy, sortDir)`.
+- Both history endpoints return paginated responses and use Basic Auth.
+- `POST /api/coin-transactions` awards bonuses with JSON `{ studentId, amount, description }`.
 
 ## Important Notes
 
@@ -106,12 +107,6 @@ The following endpoints are not in the OpenAPI spec but may be needed:
    - POST /api/orders
    - GET /api/orders
    - PUT /api/orders/{id}
-   - etc.
-
-3. **Transaction/History Endpoints** - None exist yet
-   - GET /api/transactions
-   - POST /api/transactions (award bonuses)
-   - GET /api/transactions/history
    - etc.
 
 ### API URL Configuration

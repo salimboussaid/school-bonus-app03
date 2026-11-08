@@ -118,7 +118,7 @@ export default function HistoryPage() {
       let hasMore = true
       
       while (hasMore) {
-        const response = await userApi.getAllCoinsHistory(studentId, page, 100)
+        const response = await userApi.getStudentCoinsHistory(studentId, page, 100)
         allHistory.push(...response.content)
         hasMore = !response.last
         page++
