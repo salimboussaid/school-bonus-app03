@@ -23,6 +23,10 @@ export interface UserDTO {
   exp?: number;
 }
 
+export interface CreateUserRequest extends UserDTO {
+  password: string;
+}
+
 export interface PhotoResponse {
   id: number;
 }

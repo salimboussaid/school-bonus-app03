@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { userApi, ApiError } from '@/lib/api'
-import { UserDTO, UserRole as ApiUserRole } from '@/lib/types'
+import { CreateUserRequest, UserDTO, UserRole as ApiUserRole } from '@/lib/types'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useLanguage } from '@/lib/language-context'
 
@@ -14,13 +14,15 @@ export default function UsersPage() {
   const [activeTab, setActiveTab] = useState<'STUDENT' | 'TEACHER'>('STUDENT')
   const [selectedUser, setSelectedUser] = useState<UserDTO | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const [creatingUser, setCreatingUser] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState<number | null>(null)
 
   // Form states for Create User
-  const [newUser, setNewUser] = useState<UserDTO>({
+  const [newUser, setNewUser] = useState<CreateUserRequest>({
     login: '',
+    password: '',
     first_name: '',
     last_name: '',
     middle_name: '',
@@ -165,11 +167,19 @@ export default function UsersPage() {
   }
 
   const handleCreateUser = async () => {
+    if (creatingUser) return
     const newErrors: { [key: string]: string } = {}
 
     const loginError = validateLogin(newUser.login)
     if (loginError) newErrors.login = loginError
 
+    if (!newUser.password.trim()) {
+      newErrors.password = t.usersPasswordRequired
+    } else if (newUser.password.length < 8) {
+      newErrors.password = t.usersPasswordTooShort
+    } else if (!/[()*!@#]/.test(newUser.password)) {
+      newErrors.password = t.usersPasswordSpecialChar
+    }
 
     const firstNameError = validateName(newUser.first_name, 'Имя')
     if (firstNameError) newErrors.first_name = firstNameError
@@ -193,13 +203,15 @@ export default function UsersPage() {
       return
     }
 
+    setCreatingUser(true)
+    setErrors({})
     try {
-      const { password: _password, ...createUserPayload } = newUser
-      await userApi.createUser(createUserPayload as UserDTO)
+      await userApi.createUser(newUser)
       await loadUsers() // Reload users to get properly formatted data
       setShowCreateModal(false)
       setNewUser({
         login: '',
+        password: '',
         first_name: '',
         last_name: '',
         middle_name: '',
@@ -212,6 +224,8 @@ export default function UsersPage() {
       if (error instanceof ApiError) {
         setErrors({ api: error.message })
       }
+    } finally {
+      setCreatingUser(false)
     }
   }
 
@@ -323,6 +337,7 @@ export default function UsersPage() {
             onClick={() => {
               setNewUser({
                 login: '',
+                password: '',
                 first_name: '',
                 last_name: '',
                 middle_name: '',
@@ -511,14 +526,16 @@ export default function UsersPage() {
       {showCreateModal && (
         <div className="fixed inset-0 bg-[#000000]/50 dark:bg-[#000000]/70 flex items-center justify-center z-50" onClick={() => {
           setShowCreateModal(false)
+          setNewUser(current => ({ ...current, password: '' }))
           setErrors({})
         }}>
-          <div className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-800" onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-modal="true" aria-labelledby="create-user-title" className="bg-[#FFFFFF] dark:bg-[#000000] rounded-2xl p-6 max-w-md w-full mx-4 max-h-[90dvh] overflow-y-auto border border-gray-200 dark:border-gray-800" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">{t.usersCreateUser}</h2>
+              <h2 id="create-user-title" className="text-xl font-semibold text-[#000000] dark:text-[#FFFFFF]">{t.usersCreateUser}</h2>
               <button
                 onClick={() => {
                   setShowCreateModal(false)
+                  setNewUser(current => ({ ...current, password: '' }))
                   setErrors({})
                 }}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -529,14 +546,19 @@ export default function UsersPage() {
               </button>
             </div>
 
-            <div className="space-y-4">
+            <form className="space-y-4" noValidate onSubmit={(event) => {
+              event.preventDefault()
+              void handleCreateUser()
+            }}>
               {errors.api && <div className="text-red-500 text-sm">{errors.api}</div>}
               
               <div>
                 <div>
-                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersLogin}*</label>
+                  <label htmlFor="create-user-login" className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersLogin}*</label>
                   <input
+                    id="create-user-login"
                     type="text"
+                    autoComplete="username"
                     value={newUser.login}
                     onChange={(e) => setNewUser({ ...newUser, login: e.target.value })}
                     placeholder={t.usersLogin}
@@ -546,6 +568,26 @@ export default function UsersPage() {
                   />
                   {errors.login && <p className="text-red-500 text-xs mt-1">{errors.login}</p>}
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="create-user-password" className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersPassword}*</label>
+                <input
+                  id="create-user-password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  aria-invalid={!!errors.password}
+                  aria-describedby={errors.password ? 'create-user-password-hint create-user-password-error' : 'create-user-password-hint'}
+                  className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
+                    errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
+                  } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
+                />
+                <p id="create-user-password-hint" className="text-gray-500 dark:text-gray-400 text-xs mt-1">{t.usersPasswordHint}</p>
+                {errors.password && <p id="create-user-password-error" role="alert" className="text-red-500 text-xs mt-1">{errors.password}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -637,12 +679,14 @@ export default function UsersPage() {
               </div>
 
               <button
-                onClick={handleCreateUser}
-                className="w-full bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] font-medium py-3 rounded-full mt-4 border border-[#000000] dark:border-[#FFFFFF]"
+                type="submit"
+                disabled={creatingUser}
+                aria-busy={creatingUser}
+                className="w-full bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:bg-[#1a1a1a] dark:hover:bg-[#e5e5e5] font-medium py-3 rounded-full mt-4 border border-[#000000] dark:border-[#FFFFFF] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {t.usersCreate || 'Create'}
+                {creatingUser ? t.usersLoading : t.usersCreate}
               </button>
-            </div>
+            </form>
           </div>
         </div>
       )}

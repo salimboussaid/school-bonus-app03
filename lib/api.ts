@@ -1,5 +1,6 @@
 import {
   UserDTO,
+  CreateUserRequest,
   GroupDTO,
   CreateGroupRequest,
   AdminPresentResponse,
@@ -138,7 +139,7 @@ export const userApi = {
     return handleResponse<UserDTO>(response);
   },
 
-  createUser: async (user: UserDTO): Promise<UserDTO> => {
+  createUser: async (user: CreateUserRequest): Promise<UserDTO> => {
     const response = await fetch(`${API_BASE_URL}/users`, {
       method: 'POST',
       headers: getAuthHeaders(),
