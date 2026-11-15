@@ -97,7 +97,7 @@ export default function UsersPage() {
           middle_name: '',
           full_name: s.fullName,
           email: '',
-          date_of_birth: s.birthDate || '',
+          date_of_birth: s.date_of_birth ?? '',
           coins: parseNumericValue(s.coins),
           exp: getStudentExp(s as unknown as Record<string, unknown>),
         }))

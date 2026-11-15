@@ -141,7 +141,7 @@ export interface StudentSummary {
   id: number;
   fullName: string;
   login: string;
-  birthDate?: string;
+  date_of_birth: string | null;
   coins?: number | string;
   exp?: number | string;
 }
