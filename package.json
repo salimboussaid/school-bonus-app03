@@ -8,6 +8,7 @@
     "copy-files": "node -e \"require('fs').copyFileSync('public/_redirects', 'out/_redirects'); require('fs').copyFileSync('public/_headers', 'out/_headers');\"",
     "start": "serve -s out -l $PORT",
     "lint": "next lint",
+    "test": "node --experimental-strip-types --test tests/*.test.cjs",
     "proxy": "node server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run proxy\""
   },

@@ -5,6 +5,7 @@ import { userApi, ApiError } from '@/lib/api'
 import { CreateUserRequest, UserDTO, UserRole as ApiUserRole } from '@/lib/types'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { useLanguage } from '@/lib/language-context'
+import { getEmailError, getPasswordError, getPasswordRequirements, PASSWORD_MIN_LENGTH } from '@/lib/user-validation'
 
 export default function UsersPage() {
   const { t } = useLanguage()
@@ -43,6 +44,7 @@ export default function UsersPage() {
   })
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const passwordRequirements = getPasswordRequirements(newUser.password)
   const menuRef = useRef<HTMLDivElement>(null)
 
   const parseNumericValue = (value: unknown): number => {
@@ -148,13 +150,25 @@ export default function UsersPage() {
   }
 
   const validateEmail = (email: string, userId?: number): string | null => {
-    if (!email) return t.usersEmailRequired
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return t.usersEmailInvalid
-    }
+    const emailError = getEmailError(email)
+    if (emailError) return t[emailError]
     const emailExists = users.some(u => u.email === email && u.id !== userId)
     if (emailExists) return t.usersEmailExists
     return null
+  }
+
+  const setFieldError = (field: 'email' | 'password', error: string | null) => {
+    setErrors(current => {
+      const next = { ...current }
+      if (error) next[field] = error
+      else delete next[field]
+      return next
+    })
+  }
+
+  const validatePassword = (password: string): string | null => {
+    const error = getPasswordError(password)
+    return error ? t[error] : null
   }
 
   const validateBirthDate = (date: string): string | null => {
@@ -173,13 +187,8 @@ export default function UsersPage() {
     const loginError = validateLogin(newUser.login)
     if (loginError) newErrors.login = loginError
 
-    if (!newUser.password.trim()) {
-      newErrors.password = t.usersPasswordRequired
-    } else if (newUser.password.length < 8) {
-      newErrors.password = t.usersPasswordTooShort
-    } else if (!/[()*!@#]/.test(newUser.password)) {
-      newErrors.password = t.usersPasswordSpecialChar
-    }
+    const passwordError = validatePassword(newUser.password)
+    if (passwordError) newErrors.password = passwordError
 
     const firstNameError = validateName(newUser.first_name, 'Имя')
     if (firstNameError) newErrors.first_name = firstNameError
@@ -192,7 +201,8 @@ export default function UsersPage() {
       if (middleNameError) newErrors.middle_name = middleNameError
     }
 
-    const emailError = validateEmail(newUser.email)
+    const email = newUser.email.trim()
+    const emailError = validateEmail(email)
     if (emailError) newErrors.email = emailError
 
     const birthDateError = validateBirthDate(newUser.date_of_birth)
@@ -206,7 +216,7 @@ export default function UsersPage() {
     setCreatingUser(true)
     setErrors({})
     try {
-      await userApi.createUser(newUser)
+      await userApi.createUser({ ...newUser, email })
       await loadUsers() // Reload users to get properly formatted data
       setShowCreateModal(false)
       setNewUser({
@@ -577,16 +587,30 @@ export default function UsersPage() {
                   type="password"
                   autoComplete="new-password"
                   required
-                  minLength={8}
+                  minLength={PASSWORD_MIN_LENGTH}
                   value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  onChange={(e) => {
+                    const password = e.target.value
+                    setNewUser(current => ({ ...current, password }))
+                    if (errors.password) setFieldError('password', validatePassword(password))
+                  }}
+                  onBlur={(e) => setFieldError('password', validatePassword(e.target.value))}
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? 'create-user-password-hint create-user-password-error' : 'create-user-password-hint'}
                   className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
                     errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
                   } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                 />
-                <p id="create-user-password-hint" className="text-gray-500 dark:text-gray-400 text-xs mt-1">{t.usersPasswordHint}</p>
+                <ul id="create-user-password-hint" aria-label={t.usersPasswordHint} className="text-xs mt-1 space-y-1">
+                  <li className={passwordRequirements.minLength ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
+                    <span aria-hidden="true">{passwordRequirements.minLength ? '✓' : '○'} </span>
+                    {t.usersPasswordLengthHint}
+                  </li>
+                  <li className={passwordRequirements.specialCharacter ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}>
+                    <span aria-hidden="true">{passwordRequirements.specialCharacter ? '✓' : '○'} </span>
+                    {t.usersPasswordSpecialCharHint}
+                  </li>
+                </ul>
                 {errors.password && <p id="create-user-password-error" role="alert" className="text-red-500 text-xs mt-1">{errors.password}</p>}
               </div>
 
@@ -651,17 +675,31 @@ export default function UsersPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersEmail}*</label>
+                  <label htmlFor="create-user-email" className="block text-sm mb-2 text-[#000000] dark:text-[#FFFFFF]">{t.usersEmail}*</label>
                   <input
+                    id="create-user-email"
                     type="email"
+                    autoComplete="email"
+                    required
                     value={newUser.email}
-                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    onChange={(e) => {
+                      const email = e.target.value
+                      setNewUser(current => ({ ...current, email }))
+                      if (errors.email) setFieldError('email', validateEmail(email.trim()))
+                    }}
+                    onBlur={(e) => {
+                      const email = e.target.value.trim()
+                      setNewUser(current => ({ ...current, email }))
+                      setFieldError('email', validateEmail(email))
+                    }}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'create-user-email-error' : undefined}
                     placeholder={t.usersEmail}
                     className={`w-full px-4 py-2 rounded-lg bg-[#FFFFFF] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] border ${
                       errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-700'
                     } focus:outline-none focus:ring-2 focus:ring-[#000000] dark:focus:ring-[#FFFFFF]`}
                   />
-                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  {errors.email && <p id="create-user-email-error" role="alert" className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 <div>
